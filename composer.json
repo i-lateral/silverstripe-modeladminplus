@@ -1,0 +1,40 @@
+{
+  "name": "i-lateral/silverstripe-modeladminplus",
+  "description": "Adds some extra features to a standard ModelAdmin field",
+    "type": "silverstripe-vendormodule",
+    "homepage": "https://github.com/i-lateral/silverstripe-modeladminplus",
+    "keywords": [
+        "silverstripe",
+        "admin",
+        "ModelAdmin"
+    ],
+    "license": "BSD-3-Clause",
+    "authors": [
+        {
+            "name": "Morven Lewis-Everley",
+            "email": "morven@ilateral.co.uk"
+        },
+        {
+            "name": "Mark Anderson",
+            "email": "mark@ilateral.co.uk"
+        }
+    ],
+    "support": {
+        "issues": "https://github.com/i-lateral/silverstripe-modeladminplus/issues"
+    },
+    "require": {
+        "silverstripe/framework": "~4.0",
+        "silverstripe/admin": "~1.0",
+        "colymba/gridfield-bulk-editing-tools": "~3.0"
+    },
+    "extra": {
+        "expose": [
+            "client/dist"
+        ]
+    },
+    "autoload": {
+        "psr-4": {
+            "ilateral\\ModelAdminPlus\\": "src/"
+        }
+    }
+}
