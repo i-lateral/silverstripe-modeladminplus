@@ -10,7 +10,9 @@ Expanded version of ModelAdmin that adds some extra features:
 
 Install this module via composer:
 
-  # composer require i-lateral/silverstripe-modeladminplus
+```
+composer require i-lateral/silverstripe-modeladminplus
+```
 
 ## Usage
 
