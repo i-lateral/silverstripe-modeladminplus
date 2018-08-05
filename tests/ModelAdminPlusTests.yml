@@ -1,0 +1,7 @@
+ilateral\SilverStripe\ModelAdminPlus\Tests\Contact:
+  mo:
+    Name: Morven
+    Phone: "44 1234 123 456"
+  mark:
+    Name: Mark
+    Phone: "40 2345 456 789"
