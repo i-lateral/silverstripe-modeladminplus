@@ -1,5 +1,8 @@
 # SilverStripe ModelAdminPlus
 
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/i-lateral/silverstripe-modeladminplus/badges/quality-score.png?b=1)](https://scrutinizer-ci.com/g/i-lateral/silverstripe-modeladminplus/?branch=1)
+[![Build Status](https://travis-ci.org/i-lateral/silverstripe-modeladminplus.svg?branch=1)](https://travis-ci.org/i-lateral/silverstripe-modeladminplus)
+
 Expanded version of ModelAdmin that adds some extra features:
 
 * Submitting `SearchForm` via a POST (meaning that complex fields that require an Ajax callback should now function).
