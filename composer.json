@@ -6,7 +6,8 @@
     "keywords": [
         "silverstripe",
         "admin",
-        "ModelAdmin"
+        "ModelAdmin",
+        "DataObject"
     ],
     "license": "BSD-3-Clause",
     "authors": [
@@ -34,7 +35,7 @@
     },
     "autoload": {
         "psr-4": {
-            "ilateral\\ModelAdminPlus\\": "src/"
+            "ilateral\\SilverStripe\\ModelAdminPlus\\": "src/"
         }
     }
 }
