@@ -16,7 +16,9 @@ composer require i-lateral/silverstripe-modeladminplus
 
 ## Usage
 
-To use this module, simply have you custom `ModelAdmin` extend `ModelAdminPlus` (instead of `ModelAdmin`). For example:
+This module is designed to be "hot-swappable" with standard `ModelAdmin` extensions.
+To generate your own admin interface using it, simply have you custom `ModelAdmin`
+extend `ModelAdminPlus` (instead of `ModelAdmin`). For example:
 
 ```php
 use ilateral\SilverStripe\ModelAdminPlus\ModelAdminPlus;
