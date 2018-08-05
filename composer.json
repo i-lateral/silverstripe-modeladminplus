@@ -38,8 +38,7 @@
         }
     },
     "scripts": {
-        "lint": "vendor/bin/phpcs src/ tests/",
-        "lint-clean": "vendor/bin/phpcbf src/ tests/"
+        "lint": "phpcs -s src/ tests/"
     },
     "minimum-stability": "dev"
 }
