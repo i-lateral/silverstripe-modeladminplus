@@ -9,12 +9,11 @@ use SilverStripe\Control\Controller;
 use SilverStripe\Forms\DatetimeField;
 use Colymba\BulkManager\BulkAction\UnlinkHandler;
 
-
 /**
  * Custom version of model admin that adds extra features
  * (such as submitting search results via a POST, saving the query
  * as a session and automatic Bulk Editing support)
- * 
+ *
  * @author ilateral
  * @package ModelAdminPlus
  */
@@ -45,10 +44,10 @@ abstract class ModelAdminPlus extends ModelAdmin
 
     /**
      * Get the default export fields for the current model.
-     * 
+     *
      * First this checks if there is an `export_fields` config variable set on
      * the model class, if not, it reverts to the default behaviour.
-     * 
+     *
      * @return array
      */
     public function getExportFields()
@@ -72,7 +71,7 @@ abstract class ModelAdminPlus extends ModelAdmin
     /**
      * Get the name of the session to be useed by this model admin's search
      * form.
-     * 
+     *
      * @return string
      */
     public function getSearchSessionName()
@@ -84,7 +83,7 @@ abstract class ModelAdminPlus extends ModelAdmin
 
     /**
      * Empty the current search session
-     * 
+     *
      * @return Session
      */
     public function clearSearchSession()
@@ -95,7 +94,7 @@ abstract class ModelAdminPlus extends ModelAdmin
 
     /**
      * Get the current search session
-     * 
+     *
      * @return Session
      */
     public function getSearchSession()
@@ -107,9 +106,9 @@ abstract class ModelAdminPlus extends ModelAdmin
     /**
      * Set some data to a search session. This needs to be an array of
      * data (like the data submitted by a form).
-     * 
+     *
      * @param array $data An array of data to store in the session
-     * 
+     *
      * @return self
      */
     public function setSearchSession($data)
@@ -138,7 +137,7 @@ abstract class ModelAdminPlus extends ModelAdmin
     /**
      * Overwrite the default search list to account for the new session based
      * search data.
-     * 
+     *
      * You can override how ModelAdmin returns DataObjects by either overloading this method,
      * or defining an extension to ModelAdmin that implements the `updateList` method
      * (and takes a {@link \SilverStripe\ORM\DataList} as the
@@ -188,10 +187,10 @@ abstract class ModelAdminPlus extends ModelAdmin
 
     /**
      * Add bulk editor to Edit Form
-     * 
+     *
      * @param int|null  $id
      * @param FieldList $fields
-     * 
+     *
      * @return Form A Form object
      */
     public function getEditForm($id = null, $fields = null)
@@ -250,10 +249,10 @@ abstract class ModelAdminPlus extends ModelAdmin
 
     /**
      * Set the session from the submitted form data (and redirect back)
-     * 
+     *
      * @param array $data Submitted form
      * @param Form  $form The current form
-     * 
+     *
      * @return HTTPResponse
      */
     public function search($data, $form)
