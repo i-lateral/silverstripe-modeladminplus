@@ -36,5 +36,10 @@
             "ilateral\\SilverStripe\\ModelAdminPlus\\": "src/",
             "ilateral\\SilverStripe\\ModelAdminPlus\\Tests\\": "tests/"
         }
-    }
+    },
+    "scripts": {
+        "lint": "vendor/bin/phpcs code/ tests/",
+        "lint-clean": "vendor/bin/phpcbf code/ tests/"
+    },
+    "minimum-stability": "dev"
 }
