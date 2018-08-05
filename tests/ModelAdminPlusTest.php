@@ -11,9 +11,9 @@ use ilateral\SilverStripe\ModelAdminPlus\Tests\Contact;
 use ilateral\SilverStripe\ModelAdminPlus\ModelAdminPlus;
 use ilateral\SilverStripe\ModelAdminPlus\Tests\ContactAdmin;
 
-class ModelAdminPlusTests extends FunctionalTest
+class ModelAdminPlusTest extends FunctionalTest
 {
-    protected static $fixture_file = 'ModelAdminPlusTests.yml';
+    protected static $fixture_file = 'ModelAdminPlusTest.yml';
 
     protected static $extra_dataobjects = [
         Contact::class
@@ -59,14 +59,18 @@ class ModelAdminPlusTests extends FunctionalTest
     {
         $this->assertEquals(
             $this->curr_admin->getSearchSessionName(),
-            ModelAdminPlus::class . "." . Contact::class
+            str_replace(
+                '\\',
+                '-',
+                ModelAdminPlus::class . "." . Contact::class
+            )
         );
     }
 
     public function testSearchSession()
     {
         // First check session is empty
-        $this->assetNull(
+        $this->assertNull(
             $this->curr_admin->getSearchSession()
         );
 
@@ -74,7 +78,7 @@ class ModelAdminPlusTests extends FunctionalTest
         $data = ["Name" => "Mark"];
         $this->curr_admin->setSearchSession($data);
 
-        $this->assetEquals(
+        $this->assertEquals(
             $this->curr_admin->getSearchSession(),
             $data
         );
@@ -82,7 +86,7 @@ class ModelAdminPlusTests extends FunctionalTest
         // Finally check clearing the session works
         $this->curr_admin->clearSearchSession();
         
-        $this->assetNull(
+        $this->assertNull(
             $this->curr_admin->getSearchSession()
         );
     }
@@ -90,7 +94,7 @@ class ModelAdminPlusTests extends FunctionalTest
     public function testSearchData()
     {
         // First check session is empty
-        $this->assetEquals(
+        $this->assertEquals(
             $this->curr_admin->getSearchData(),
             []
         );
@@ -99,7 +103,7 @@ class ModelAdminPlusTests extends FunctionalTest
         $data = ["Name" => "Mark"];
         $this->curr_admin->setSearchSession($data);
 
-        $this->assetEquals(
+        $this->assertEquals(
             $this->curr_admin->getSearchData(),
             $data
         );

@@ -6,6 +6,7 @@ use SilverStripe\ORM\ArrayLib;
 use SilverStripe\Admin\ModelAdmin;
 use Colymba\BulkManager\BulkManager;
 use SilverStripe\Control\Controller;
+use SilverStripe\Core\Config\Config;
 use SilverStripe\Forms\DatetimeField;
 use Colymba\BulkManager\BulkAction\UnlinkHandler;
 
