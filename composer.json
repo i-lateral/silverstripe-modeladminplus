@@ -31,11 +31,6 @@
     "require-dev": {
         "phpunit/PHPUnit": "^5.7"
     },
-    "extra": {
-        "expose": [
-            "client/dist"
-        ]
-    },
     "autoload": {
         "psr-4": {
             "ilateral\\SilverStripe\\ModelAdminPlus\\": "src/",
