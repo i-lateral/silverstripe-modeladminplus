@@ -20,6 +20,7 @@ use Colymba\BulkManager\BulkAction\UnlinkHandler;
  */
 abstract class ModelAdminPlus extends ModelAdmin
 {
+    const EXPORT_FIELDS = "export_fields";
 
     private static $allowed_actions = [
         "SearchForm"
@@ -40,6 +41,32 @@ abstract class ModelAdminPlus extends ModelAdmin
                 )
             );
         }
+    }
+
+    /**
+     * Get the default export fields for the current model.
+     * 
+     * First this checks if there is an `export_fields` config variable set on
+     * the model class, if not, it reverts to the default behaviour.
+     * 
+     * @return array
+     */
+    public function getExportFields()
+    {
+        $export_fields = Config::inst()->get(
+            $this->modelClass,
+            self::EXPORT_FIELDS
+        );
+
+        if (isset($export_fields) && is_array($export_fields)) {
+            $fields = $export_fields;
+        } else {
+            $fields = parent::getExportFields();
+        }
+
+        $this->extend("updateExportFields", $fields);
+
+        return $fields;
     }
 
     /**
