@@ -258,6 +258,20 @@ abstract class ModelAdminPlus extends ModelAdmin
      */
     public function search($data, $form)
     {
+        foreach ($data as $key => $value) {
+            // Ensure we clear any null values
+            // so they don't mess up the list
+            if (empty($data[$key])) {
+                unset($data[$key]);
+            }
+
+            // Ensure we clear any null values
+            // so they don't mess up the list
+            if (strpos($key, "action_") !== false) {
+                unset($data[$key]);
+            }
+        }
+
         $this->setSearchSession($data);
 
         return $this->redirectBack();
