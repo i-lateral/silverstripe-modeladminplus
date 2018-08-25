@@ -9,6 +9,8 @@ use SilverStripe\Control\Controller;
 use SilverStripe\Core\Config\Config;
 use SilverStripe\Forms\DatetimeField;
 use Colymba\BulkManager\BulkAction\UnlinkHandler;
+use SilverStripe\Forms\GridField\GridFieldPaginator;
+use Symbiote\GridFieldExtensions\GridFieldConfigurablePaginator;
 
 /**
  * Custom version of model admin that adds extra features
@@ -204,9 +206,12 @@ abstract class ModelAdminPlus extends ModelAdmin
         // Add bulk editing to gridfield
         $manager = new BulkManager();
         $manager->removeBulkAction(UnlinkHandler::class);
+
         $gridField
             ->getConfig()
-            ->addComponent($manager);
+            ->removeComponentsByType(GridFieldPaginator::class)
+            ->addComponent($manager)
+            ->addComponent(new GridFieldConfigurablePaginator());
 
         return $form;
     }
