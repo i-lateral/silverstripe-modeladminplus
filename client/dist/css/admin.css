@@ -1,0 +1,9 @@
+.ss-gridfield input.bulkSelect,
+.ss-gridfield input.bulkSelectAll {
+    position: static;
+    margin: 0;
+    float: right;
+}
+.ss-gridfield .bulkManagerOptions .form-check-label {
+    display: inline;
+}

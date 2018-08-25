@@ -7,3 +7,8 @@
 ## 1.0.1
 
 * Ensure search filters are stripped if they are null (so filtering works correctly)
+
+## 1.0.2
+
+* Add pagination length selection via `GridFieldConfigurablePaginator`
+* Add styling to fix bulk editing checkboxes

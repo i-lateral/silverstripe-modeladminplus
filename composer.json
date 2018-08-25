@@ -41,5 +41,10 @@
     "scripts": {
         "lint": "phpcs -s src/ tests/"
     },
+    "extra": {
+        "expose": [
+            "client/dist"
+        ]
+    },
     "minimum-stability": "dev"
 }

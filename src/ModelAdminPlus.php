@@ -4,6 +4,7 @@ namespace ilateral\SilverStripe\ModelAdminPlus;
 
 use SilverStripe\ORM\ArrayLib;
 use SilverStripe\Admin\ModelAdmin;
+use SilverStripe\View\Requirements;
 use Colymba\BulkManager\BulkManager;
 use SilverStripe\Control\Controller;
 use SilverStripe\Core\Config\Config;
@@ -31,6 +32,9 @@ abstract class ModelAdminPlus extends ModelAdmin
     public function init()
     {
         parent::init();
+
+        // Require additional CSS
+        Requirements::css("i-lateral/silverstripe-modeladminplus:client/dist/css/admin.css");
 
         $clear = $this->getRequest()->getVar("clear");
 
