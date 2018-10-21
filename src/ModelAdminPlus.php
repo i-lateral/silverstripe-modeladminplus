@@ -3,6 +3,7 @@
 namespace ilateral\SilverStripe\ModelAdminPlus;
 
 use SilverStripe\ORM\ArrayLib;
+use SilverStripe\Core\ClassInfo;
 use SilverStripe\Admin\ModelAdmin;
 use SilverStripe\View\Requirements;
 use Colymba\BulkManager\BulkManager;
@@ -11,6 +12,9 @@ use SilverStripe\Core\Config\Config;
 use SilverStripe\Forms\DatetimeField;
 use Colymba\BulkManager\BulkAction\UnlinkHandler;
 use SilverStripe\Forms\GridField\GridFieldPaginator;
+use SilverStripe\Forms\GridField\GridFieldDataColumns;
+use SilverStripe\Forms\GridField\GridFieldSortableHeader;
+use SilverStripe\Forms\GridField\GridField_ColumnProvider;
 use Symbiote\GridFieldExtensions\GridFieldConfigurablePaginator;
 
 /**
@@ -24,6 +28,14 @@ use Symbiote\GridFieldExtensions\GridFieldConfigurablePaginator;
 abstract class ModelAdminPlus extends ModelAdmin
 {
     const EXPORT_FIELDS = "export_fields";
+
+    /**
+     * Automatically convert date fields on gridfields
+     * to use `Date.Nice`.
+     * 
+     * @var boolean
+     */
+    private static $auto_convert_dates = true;
 
     private static $allowed_actions = [
         "SearchForm"
@@ -192,6 +204,7 @@ abstract class ModelAdminPlus extends ModelAdmin
         return $context->getSummary();
     }
 
+    
     /**
      * Add bulk editor to Edit Form
      *
@@ -203,7 +216,7 @@ abstract class ModelAdminPlus extends ModelAdmin
     public function getEditForm($id = null, $fields = null)
     {
         $form = parent::getEditForm($id, $fields);
-        $gridField = $form
+        $grid_field = $form
             ->Fields()
             ->fieldByName($this->sanitiseClassName($this->modelClass));
 
@@ -211,15 +224,25 @@ abstract class ModelAdminPlus extends ModelAdmin
         $manager = new BulkManager();
         $manager->removeBulkAction(UnlinkHandler::class);
 
-        $gridField
-            ->getConfig()
+        $config = $grid_field->getConfig();
+
+        $config
             ->removeComponentsByType(GridFieldPaginator::class)
             ->addComponent($manager)
             ->addComponent(new GridFieldConfigurablePaginator());
 
+        if ($this->config()->auto_convert_dates) {
+            GridFieldDateFinder::create($grid_field)->convertDateFields();
+        }
+
         return $form;
     }
 
+    /**
+     * Overwrite default search form
+     * 
+     * @return Form
+     */
     public function SearchForm()
     {
         $form = parent::SearchForm();

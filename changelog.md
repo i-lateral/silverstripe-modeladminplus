@@ -12,3 +12,7 @@
 
 * Add pagination length selection via `GridFieldConfigurablePaginator`
 * Add styling to fix bulk editing checkboxes
+
+## 1.0.3
+
+* Automatically find and convert any date/datetime fields to `Date.Nice` (and retain sorting)
