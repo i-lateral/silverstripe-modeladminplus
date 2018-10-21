@@ -9,6 +9,7 @@ Expanded version of ModelAdmin that adds some extra features:
 * Saving search results to a session rather than using the query string.
 * Adding bulk editing (using `colymba/gridfield-bulk-editing-tools` by default). 
 * When generating export fields for a `DataObject` also checks if the object has `export_fields`
+* Automatically find and format `DBDate`/`DBDatetime` fields to `DBDate.Nice`
 
 ## Installing
 
@@ -73,3 +74,31 @@ class MyDataObject extends DataObject
 ```
 
 You can also overwrite the export_fields using the `updateExportFields` extension hook.
+
+## Disable automatic date/datetime conversion
+
+If you do not want `ModelAdminPlus` to automatically convert `DBDate`/`DBDateTime` fields
+to a formatted column (default to `DBDate.Nice`), you can disable this via SilverStripe
+config, using:
+
+  `ilateral\SilverStripe\ModelAdminPlus.auto_convert_dates`
+
+## Changing default date format
+
+If you want to change how ModelAdminPlus formats dates (without effecting the Nice method),
+you can do this via the helper class `GridFieldDateFinder`. You can configure this either
+globally, or per instance called.
+
+### Changing date format globally
+
+You can change all instances of date re-format by setting the following SilverStripe config
+variable:
+
+  `ilateral\SilverStripe\ModelAdminPlus.default_date_type`
+
+### Changing date format per instance
+
+You can change specific instances of the date format every time you call the GridFieldDateFinder
+class, by using the following method:
+
+  `ilateral\SilverStripe\ModelAdminPlus::setDateType("newDateType")`
