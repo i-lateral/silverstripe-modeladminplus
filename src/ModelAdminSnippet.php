@@ -70,6 +70,10 @@ abstract class ModelAdminSnippet extends ViewableData
      */
     protected $extra_classes = [];
 
+    private $casting = [
+        "Order" => "Float"
+    ];
+
     /**
      * Return an i18n friendly version of the title.
      *
@@ -78,6 +82,11 @@ abstract class ModelAdminSnippet extends ViewableData
     public function getTitle()
     {
         return _t(__CLASS__ . "Title", $this->config()->title);
+    }
+
+    public function getOrder()
+    {
+        return $this->config()->priority;
     }
 
     /**

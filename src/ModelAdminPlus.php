@@ -68,6 +68,8 @@ abstract class ModelAdminPlus extends ModelAdmin
             $snippets->add($snippet);
         }
 
+        $snippets = $snippets->sort("Order", "DESC");
+
         $this->extend("updateSnippets", $snippets);
 
         return $snippets;
