@@ -40,6 +40,13 @@
 					<% end_loop %>
 				</p>
 			<% end_if %>
+
+			<% if $Snippets.exists %>
+				<div class="row mb-3">
+					<% loop $Snippets %>{$Snippet}<% end_loop %>
+				</div>
+			<% end_if %>
+
 			$EditForm
 		</div>
 	</div>

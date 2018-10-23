@@ -16,3 +16,7 @@
 ## 1.0.3
 
 * Automatically find and convert any date/datetime fields to `Date.Nice` (and retain sorting)
+
+## 1.0.4
+
+* Add custom "summary snippets" to the top of a model admin plus interface

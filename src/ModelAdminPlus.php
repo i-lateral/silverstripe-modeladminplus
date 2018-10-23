@@ -3,6 +3,7 @@
 namespace ilateral\SilverStripe\ModelAdminPlus;
 
 use SilverStripe\ORM\ArrayLib;
+use SilverStripe\ORM\ArrayList;
 use SilverStripe\Core\ClassInfo;
 use SilverStripe\Admin\ModelAdmin;
 use SilverStripe\View\Requirements;
@@ -10,6 +11,7 @@ use Colymba\BulkManager\BulkManager;
 use SilverStripe\Control\Controller;
 use SilverStripe\Core\Config\Config;
 use SilverStripe\Forms\DatetimeField;
+use SilverStripe\Core\Injector\Injector;
 use Colymba\BulkManager\BulkAction\UnlinkHandler;
 use SilverStripe\Forms\GridField\GridFieldPaginator;
 use SilverStripe\Forms\GridField\GridFieldDataColumns;
@@ -40,6 +42,36 @@ abstract class ModelAdminPlus extends ModelAdmin
     private static $allowed_actions = [
         "SearchForm"
     ];
+
+    /**
+     * List of currently registered ModelAdminSnippets, that is represented as
+     * a list of classnames.
+     *
+     * These snippets are then setup when ModelAdminPlus is initilised and
+     * rendered into the ModelAdminPlus content template.
+     *
+     * @var array
+     */
+    private static $registered_snippets = [];
+
+    /**
+     * Setup 
+     */
+    public function getSnippets()
+    {
+        $snippets = ArrayList::create();
+
+        // Setup any model admin plus snippets
+        foreach ($this->config()->registered_snippets as $snippet) {
+            $snippet = Injector::inst()->create($snippet);
+            $snippet->setParent($this);
+            $snippets->add($snippet);
+        }
+
+        $this->extend("updateSnippets", $snippets);
+
+        return $snippets;
+    }
 
     public function init()
     {
