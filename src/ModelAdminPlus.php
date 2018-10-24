@@ -34,7 +34,7 @@ abstract class ModelAdminPlus extends ModelAdmin
     /**
      * Automatically convert date fields on gridfields
      * to use `Date.Nice`.
-     * 
+     *
      * @var boolean
      */
     private static $auto_convert_dates = true;
@@ -55,7 +55,7 @@ abstract class ModelAdminPlus extends ModelAdmin
     private static $registered_snippets = [];
 
     /**
-     * Setup 
+     * Setup
      */
     public function getSnippets()
     {
@@ -274,7 +274,7 @@ abstract class ModelAdminPlus extends ModelAdmin
 
     /**
      * Overwrite default search form
-     * 
+     *
      * @return Form
      */
     public function SearchForm()

@@ -15,7 +15,7 @@ use SilverStripe\Forms\GridField\GridField_ColumnProvider;
  * Helper class designed to find date fields in a provided
  * `GridField` and convert them to a nice format (while
  * maintaining sorting)
- * 
+ *
  */
 class GridFieldDateFinder
 {
@@ -23,7 +23,7 @@ class GridFieldDateFinder
 
     /**
      * `GridField` we are working with
-     * 
+     *
      * @var GridField
      */
     protected $grid_field;
@@ -39,7 +39,7 @@ class GridFieldDateFinder
     /**
      * The date formatting method to use (this corresponds
      * to a Date method on the Date/DateTime data type).
-     * 
+     *
      * @var string
      */
     private static $default_date_type = ".Nice";
@@ -106,7 +106,7 @@ class GridFieldDateFinder
     /**
      * Create an array of fields, titles and values that we
      * use to setup sortable fields in the following format:
-     * 
+     *
      * - Title (the human readable name of the column)
      * - Column (the actual field used to display data)
      * - Sort (DB the column used to sort the data)
@@ -160,7 +160,7 @@ class GridFieldDateFinder
     /**
      * Change the array keys on the provided array to the provided alternative
      * (thanks to: https://stackoverflow.com/a/14227644/4161644)
-     * 
+     *
      * @param string $original Original key
      * @param string $new      New key
      * @param array  $array    Haystack array
@@ -179,7 +179,7 @@ class GridFieldDateFinder
      * Get `GridField` we are working with
      *
      * @return  GridField
-     */ 
+     */
     public function getGridField()
     {
         return $this->grid_field;
@@ -191,7 +191,7 @@ class GridFieldDateFinder
      * @param GridField $grid_field `GridField` we are working with
      *
      * @return self
-     */ 
+     */
     public function setGridField(GridField $grid_field)
     {
         $this->grid_field = $grid_field;
@@ -203,7 +203,7 @@ class GridFieldDateFinder
      * Get for this instance
      *
      * @return string
-     */ 
+     */
     public function getDateType()
     {
         if (!empty($this->date_type)) {
@@ -219,7 +219,7 @@ class GridFieldDateFinder
      * @param string $date_type for this instance
      *
      * @return self
-     */ 
+     */
     public function setDateType(string $date_type)
     {
         $this->date_type = $date_type;

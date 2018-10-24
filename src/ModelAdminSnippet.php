@@ -30,28 +30,28 @@ abstract class ModelAdminSnippet extends ViewableData
 
     /**
      * The name/title of the current snippet.
-     * 
+     *
      * @var string
      */
     private static $title;
 
     /**
      * The order in which this snippet will be loaded
-     * 
+     *
      * @var int
      */
     private static $priority = 0;
 
     /**
      * Default background colour
-     * 
+     *
      * @var string
      */
     private static $background = self::INFO;
 
     /**
      * Default text colour
-     * 
+     *
      * @var string
      */
     private static $text = self::WHITE;
@@ -91,7 +91,7 @@ abstract class ModelAdminSnippet extends ViewableData
 
     /**
      * Render the current snippet
-     * 
+     *
      * @return string
      */
     public function getSnippet()
