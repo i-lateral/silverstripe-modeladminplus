@@ -20,3 +20,7 @@
 ## 1.0.4
 
 * Add custom "summary snippets" to the top of a model admin plus interface
+
+## 1.0.5
+
+* Reduce column padding on summary snippets

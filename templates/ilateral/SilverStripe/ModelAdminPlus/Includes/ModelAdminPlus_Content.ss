@@ -42,8 +42,12 @@
 			<% end_if %>
 
 			<% if $Snippets.exists %>
-				<div class="row mb-3">
-					<% loop $Snippets %>{$Snippet}<% end_loop %>
+				<div class="row mb-4">
+					<% loop $Snippets %>
+						<div class="col <% if $Last %>pr-3<% else %>pr-0<% end_if %>">
+							{$Snippet}
+						</div>
+					<% end_loop %>
 				</div>
 			<% end_if %>
 
