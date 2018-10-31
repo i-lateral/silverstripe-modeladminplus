@@ -24,3 +24,7 @@
 ## 1.0.5
 
 * Reduce column padding on summary snippets
+
+## 1.0.6
+
+* Auto convert search `TextField`s to use `AutoCompleteField`

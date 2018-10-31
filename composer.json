@@ -27,7 +27,8 @@
         "silverstripe/framework": "~4.0",
         "silverstripe/admin": "~1.0",
         "symbiote/silverstripe-gridfieldextensions": "~3.0",
-        "colymba/gridfield-bulk-editing-tools": "~3.0"
+        "colymba/gridfield-bulk-editing-tools": "~3.0",
+        "tractorcow/silverstripe-autocomplete": "^4.0"
     },
     "require-dev": {
         "phpunit/PHPUnit": "^5.7"

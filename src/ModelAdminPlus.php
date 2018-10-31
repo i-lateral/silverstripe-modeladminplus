@@ -2,9 +2,11 @@
 
 namespace ilateral\SilverStripe\ModelAdminPlus;
 
+use SilverStripe\Forms\Form;
 use SilverStripe\ORM\ArrayLib;
 use SilverStripe\ORM\ArrayList;
 use SilverStripe\Core\ClassInfo;
+use SilverStripe\Forms\TextField;
 use SilverStripe\Admin\ModelAdmin;
 use SilverStripe\View\Requirements;
 use Colymba\BulkManager\BulkManager;
@@ -17,6 +19,7 @@ use SilverStripe\Forms\GridField\GridFieldPaginator;
 use SilverStripe\Forms\GridField\GridFieldDataColumns;
 use SilverStripe\Forms\GridField\GridFieldSortableHeader;
 use SilverStripe\Forms\GridField\GridField_ColumnProvider;
+use ilateral\SilverStripe\ModelAdminPlus\AutoCompleteField;
 use Symbiote\GridFieldExtensions\GridFieldConfigurablePaginator;
 
 /**
@@ -38,6 +41,14 @@ abstract class ModelAdminPlus extends ModelAdmin
      * @var boolean
      */
     private static $auto_convert_dates = true;
+
+
+    /**
+     * Automatically convert DB text fields to AutoComplete fields
+     *
+     * @var boolean
+     */
+    private static $convert_to_autocomplete = true;
 
     private static $allowed_actions = [
         "SearchForm"
@@ -282,23 +293,72 @@ abstract class ModelAdminPlus extends ModelAdmin
         $form = parent::SearchForm();
         $fields = $form->Fields();
         $data = $this->getSearchData();
+        $class = $this->modelClass;
+        $use_autocomplete = $this->config()->convert_to_autocomplete;
+
+        $db = Config::inst()->get($class, "db");
+        $has_one = Config::inst()->get($class, "has_one");
+        $has_many = Config::inst()->get($class, "has_many");
+        $many_many = Config::inst()->get($class, "many_many");
+        $belongs_many_many = Config::inst()->get($class, "belongs_many_many");
+        $associations = array_merge(
+            $has_one,
+            $has_many,
+            $many_many,
+            $belongs_many_many
+        );
 
         // Change currently scaffolded query fields to use conventional
         // field names
         foreach ($fields as $field) {
             $name = $field->getName();
+            $title = $field->Title();
+            $in_db = false;
+            $db_field = str_replace(["q[", "]"], "", $name);
 
+            // Find any text fields an replace with autocomplete fields
+            if ($field instanceof TextField && $use_autocomplete) {
+                // If this is a relation, switch class name
+                if (strpos($name, "__")) {
+                    $parts = explode("__", $db_field);
+                    $class = $associations[$parts[0]];
+                    $db_field = $parts[1];
+                    $in_db = true;
+                }
+
+                // If this is in the DB (not casted)
+                if (in_array($db_field, array_keys($db))) {
+                    $in_db = true;
+                }
+
+                if ($in_db) {
+                    $fields->replaceField(
+                        $name,
+                        $field = AutoCompleteField::create(
+                            $name,
+                            $title,
+                            $field->Value(),
+                            $class,
+                            $db_field
+                        )->setForm($form)
+                        ->setDisplayField($db_field)
+                        ->setLabelField($db_field)
+                        ->setStoredField($db_field)
+                    );
+                }
+            }
+            
             if ($name[0] == "q" && $name[1] == "[") {
                 $name = substr($name, 2);
             }
-
+            
             if (substr($name, -1) == "]") {
                 $name = substr($name, 0, -1);
             }
 
             $field->setName($name);
         }
-
+        
         $form
             ->removeExtraClass('cms-search-form')
             ->setFormMethod('post')
