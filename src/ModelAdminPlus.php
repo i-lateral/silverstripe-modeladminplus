@@ -311,6 +311,7 @@ abstract class ModelAdminPlus extends ModelAdmin
         // Change currently scaffolded query fields to use conventional
         // field names
         foreach ($fields as $field) {
+            $field_class = $this->modelClass;
             $name = $field->getName();
             $title = $field->Title();
             $in_db = false;
@@ -321,9 +322,9 @@ abstract class ModelAdminPlus extends ModelAdmin
                 // If this is a relation, switch class name
                 if (strpos($name, "__")) {
                     $parts = explode("__", $db_field);
-                    $class = $associations[$parts[0]];
+                    $field_class = isset($associations[$parts[0]]) ? $associations[$parts[0]] : null;
                     $db_field = $parts[1];
-                    $in_db = true;
+                    $in_db = ($field_class) ? true : false;
                 }
 
                 // If this is in the DB (not casted)
@@ -338,7 +339,7 @@ abstract class ModelAdminPlus extends ModelAdmin
                             $name,
                             $title,
                             $field->Value(),
-                            $class,
+                            $field_class,
                             $db_field
                         )->setForm($form)
                         ->setDisplayField($db_field)

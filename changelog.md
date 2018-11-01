@@ -28,3 +28,7 @@
 ## 1.0.6
 
 * Auto convert search `TextField`s to use `AutoCompleteField`
+
+## 1.0.7
+
+* Improve resiliency of matching `AutoCompleteField`s on assotiations
