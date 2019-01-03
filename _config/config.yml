@@ -1,0 +1,6 @@
+---
+Name: modeladminplusconfig
+---
+SilverStripe\ORM\DataObject:
+  extensions:
+    - ilateral\SilverStripe\ModelAdminPlus\DataObjectExtension

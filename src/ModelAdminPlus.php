@@ -21,6 +21,7 @@ use SilverStripe\Forms\GridField\GridFieldSortableHeader;
 use SilverStripe\Forms\GridField\GridField_ColumnProvider;
 use ilateral\SilverStripe\ModelAdminPlus\AutoCompleteField;
 use Symbiote\GridFieldExtensions\GridFieldConfigurablePaginator;
+use SilverStripe\Forms\GridField\GridFieldFilterHeader as SSGridFieldFilterHeader;
 
 /**
  * Custom version of model admin that adds extra features
@@ -197,58 +198,6 @@ abstract class ModelAdminPlus extends ModelAdmin
 
         return $data;
     }
-
-    /**
-     * Overwrite the default search list to account for the new session based
-     * search data.
-     *
-     * You can override how ModelAdmin returns DataObjects by either overloading this method,
-     * or defining an extension to ModelAdmin that implements the `updateList` method
-     * (and takes a {@link \SilverStripe\ORM\DataList} as the
-     * first argument).
-     *
-     * @return \SilverStripe\ORM\DataList
-     */
-    public function getList()
-    {
-        $context = $this->getSearchContext();
-        $params = $this->getSearchData();
-
-        if (is_array($params)) {
-            $params = ArrayLib::array_map_recursive('trim', $params);
-
-            // Parse all DateFields to handle user input non ISO 8601 dates
-            foreach ($context->getFields() as $field) {
-                if ($field instanceof DatetimeField && !empty($params[$field->getName()])) {
-                    $params[$field->getName()] = date(
-                        'Y-m-d',
-                        strtotime($params[$field->getName()])
-                    );
-                }
-            }
-        }
-
-        $list = $context->getResults($params);
-
-        $this->extend('updateList', $list);
-
-        return $list;
-    }
-
-    /**
-     * Gets a list of fields that have been searched
-     *
-     * @return SilverStripe\ORM\ArrayList
-     */
-    public function SearchSummary()
-    {
-        $context = $this->getSearchContext();
-        $params = $this->getSearchData();
-        $context->setSearchParams($params);
-
-        return $context->getSummary();
-    }
-
     
     /**
      * Add bulk editor to Edit Form
@@ -276,101 +225,28 @@ abstract class ModelAdminPlus extends ModelAdmin
             ->addComponent($manager)
             ->addComponent(new GridFieldConfigurablePaginator());
 
+        // Switch to custom filter header
+        $config
+            ->removeComponentsByType(SSGridFieldFilterHeader::class)
+            ->addComponent(new GridFieldFilterHeader(
+                false,
+                function ($context) {
+                    $this->extend('updateSearchContext', $context);
+                },
+                function ($form) {
+                    $this->extend('updateSearchForm', $form);
+                }
+            ));
+
+        if (!$this->showSearchForm ||
+            (is_array($this->showSearchForm) && !in_array($this->modelClass, $this->showSearchForm))
+        ) {
+            $config->removeComponentsByType(GridFieldFilterHeader::class);
+        }
+
         if ($this->config()->auto_convert_dates) {
             GridFieldDateFinder::create($grid_field)->convertDateFields();
         }
-
-        return $form;
-    }
-
-    /**
-     * Overwrite default search form
-     *
-     * @return Form
-     */
-    public function SearchForm()
-    {
-        $form = parent::SearchForm();
-        $fields = $form->Fields();
-        $data = $this->getSearchData();
-        $class = $this->modelClass;
-        $use_autocomplete = $this->config()->convert_to_autocomplete;
-
-        $db = Config::inst()->get($class, "db");
-        $has_one = Config::inst()->get($class, "has_one");
-        $has_many = Config::inst()->get($class, "has_many");
-        $many_many = Config::inst()->get($class, "many_many");
-        $belongs_many_many = Config::inst()->get($class, "belongs_many_many");
-        $associations = array_merge(
-            $has_one,
-            $has_many,
-            $many_many,
-            $belongs_many_many
-        );
-
-        // Change currently scaffolded query fields to use conventional
-        // field names
-        foreach ($fields as $field) {
-            $field_class = $this->modelClass;
-            $name = $field->getName();
-            $title = $field->Title();
-            $in_db = false;
-            $db_field = str_replace(["q[", "]"], "", $name);
-
-            // Find any text fields an replace with autocomplete fields
-            if ($field instanceof TextField && $use_autocomplete) {
-                // If this is a relation, switch class name
-                if (strpos($name, "__")) {
-                    $parts = explode("__", $db_field);
-                    $field_class = isset($associations[$parts[0]]) ? $associations[$parts[0]] : null;
-                    $db_field = $parts[1];
-                    $in_db = ($field_class) ? true : false;
-                }
-
-                // If this is in the DB (not casted)
-                if (in_array($db_field, array_keys($db))) {
-                    $in_db = true;
-                }
-
-                if ($in_db) {
-                    $fields->replaceField(
-                        $name,
-                        $field = AutoCompleteField::create(
-                            $name,
-                            $title,
-                            $field->Value(),
-                            $field_class,
-                            $db_field
-                        )->setForm($form)
-                        ->setDisplayField($db_field)
-                        ->setLabelField($db_field)
-                        ->setStoredField($db_field)
-                    );
-                }
-            }
-            
-            if ($name[0] == "q" && $name[1] == "[") {
-                $name = substr($name, 2);
-            }
-            
-            if (substr($name, -1) == "]") {
-                $name = substr($name, 0, -1);
-            }
-
-            $field->setName($name);
-        }
-        
-        $form
-            ->removeExtraClass('cms-search-form')
-            ->setFormMethod('post')
-            ->setFormAction(
-                $this->Link(
-                    Controller::join_links(
-                        $this->sanitiseClassName($this->modelClass),
-                        $form->getName()
-                    )
-                )
-            )->loadDataFrom($data);
 
         return $form;
     }

@@ -32,3 +32,9 @@
 ## 1.0.7
 
 * Improve resiliency of matching `AutoCompleteField`s on assotiations
+
+
+## 1.1.0
+
+* SS 4.3 supported version
+* Remove autocomplete fields (as they currently don't work correctly with React)
