@@ -93,6 +93,7 @@ abstract class ModelAdminPlus extends ModelAdmin
 
         // Require additional CSS
         Requirements::css("i-lateral/silverstripe-modeladminplus:client/dist/css/admin.css");
+        Requirements::add_i18n_javascript('silverstripe/cms: client/lang', false, true);
 
         $clear = $this->getRequest()->getVar("clear");
 
