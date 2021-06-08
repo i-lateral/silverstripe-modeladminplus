@@ -38,3 +38,9 @@
 
 * SS 4.3 supported version
 * Remove autocomplete fields (as they currently don't work correctly with React)
+
+## 1.2.0
+
+* Re-add autocomplete support to search
+* Move snippets so they become attached to a gridfield (rather than the model admin itself)
+* Update templates
