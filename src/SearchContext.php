@@ -2,11 +2,10 @@
 
 namespace ilateral\SilverStripe\ModelAdminPlus;
 
+use SilverStripe\Core\ClassInfo;
 use SilverStripe\Forms\TextField;
 use SilverStripe\Core\Config\Config;
-use ilateral\SilverStripe\ModelAdminPlus\AutoCompleteField;
 use SilverStripe\ORM\Search\SearchContext as SSSearchContext;
-use SilverStripe\Core\ClassInfo;
 
 class SearchContext extends SSSearchContext
 {
@@ -40,9 +39,8 @@ class SearchContext extends SSSearchContext
             $belongs_many_many
         );
 
-        // Change currently scaffolded query fields to use conventional
-        // field names
-        /*foreach ($fields as $field) {
+        // Update search fields to autocomplete
+        foreach ($fields as $field) {
             $field_class = $this->modelClass;
             $name = $field->getName();
             $title = $field->Title();
@@ -81,7 +79,7 @@ class SearchContext extends SSSearchContext
             }
 
             $field->setName($name);
-        }*/
+        }
 
         return $fields;
     }
