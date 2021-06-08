@@ -5,15 +5,16 @@ namespace ilateral\SilverStripe\ModelAdminPlus;
 use SilverStripe\Forms\Form;
 use SilverStripe\ORM\ArrayList;
 use SilverStripe\Admin\ModelAdmin;
+use SilverStripe\View\Requirements;
 use Colymba\BulkManager\BulkManager;
 use SilverStripe\Core\Config\Config;
 use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Forms\GridField\GridField;
 use Colymba\BulkManager\BulkAction\UnlinkHandler;
 use SilverStripe\Forms\GridField\GridFieldConfig;
+use SilverStripe\Forms\GridField\GridFieldButtonRow;
 use SilverStripe\Forms\GridField\GridFieldPaginator;
 use ilateral\SilverStripe\ModelAdminPlus\AutoCompleteField;
-use SilverStripe\Forms\GridField\GridFieldButtonRow;
 use Symbiote\GridFieldExtensions\GridFieldConfigurablePaginator;
 use SilverStripe\Forms\GridField\GridFieldFilterHeader as SSGridFieldFilterHeader;
 
@@ -112,6 +113,8 @@ abstract class ModelAdminPlus extends ModelAdmin
     public function init()
     {
         parent::init();
+
+        Requirements::add_i18n_javascript('silverstripe/cms: client/lang', false, true);
 
         $clear = $this->getRequest()->getVar("clear");
 
