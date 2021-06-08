@@ -3,12 +3,14 @@
 namespace ilateral\SilverStripe\ModelAdminPlus;
 
 use SilverStripe\View\ViewableData;
+use SilverStripe\Forms\GridField\GridField;
+use SilverStripe\Forms\GridField\GridField_HTMLProvider;
 
 /**
  * Object representing a snippet of generic data that can be loaded at the top of a
  * ModelAdminPlus interface
  */
-abstract class ModelAdminSnippet extends ViewableData
+abstract class ModelAdminSnippet extends ViewableData implements GridField_HTMLProvider
 {
     const PRIMARY = "primary";
 
@@ -27,6 +29,18 @@ abstract class ModelAdminSnippet extends ViewableData
     const DARK = "dark";
 
     const WHITE = "white";
+
+    /**
+     * @var string placement indicator for this control
+     */
+    protected $targetFragment;
+
+    /**
+     * The current parent gridfield
+     *
+     * @var GridField
+     */
+    protected $gridfield;
 
     /**
      * The name/title of the current snippet.
@@ -57,13 +71,6 @@ abstract class ModelAdminSnippet extends ViewableData
     private static $text = self::WHITE;
 
     /**
-     * The current parent controller
-     *
-     * @var ModelAdminPlus
-     */
-    protected $parent;
-
-    /**
      * List of extra CSS classes applied to this snippet
      *
      * @var array
@@ -73,6 +80,23 @@ abstract class ModelAdminSnippet extends ViewableData
     private $casting = [
         "Order" => "Float"
     ];
+
+    /**
+     * @param string $targetFragment The HTML fragment to write the button into
+     */
+    public function __construct($targetFragment = "after")
+    {
+        $this->targetFragment = $targetFragment;
+    }
+
+    public function getHTMLFragments($gridField)
+    {
+        $this->gridfield = $gridField;
+
+        return [
+            $this->targetFragment => $this->getSnippet()
+        ];
+    }
 
     /**
      * Return an i18n friendly version of the title.
@@ -128,29 +152,6 @@ abstract class ModelAdminSnippet extends ViewableData
     abstract public function getContent();
 
     /**
-     * Get the current parent controller
-     *
-     * @return ModelAdminPlus
-     */
-    public function getParent()
-    {
-        return $this->parent;
-    }
-
-    /**
-     * Set the current parent controller
-     *
-     * @param ModelAdminPlus $parent The current parent controller
-     *
-     * @return self
-     */
-    public function setParent(ModelAdminPlus $parent)
-    {
-        $this->parent = $parent;
-        return $this;
-    }
-
-    /**
      * Get extra CSS classes as a string
      *
      * @return string
@@ -201,5 +202,15 @@ abstract class ModelAdminSnippet extends ViewableData
         }
 
         return $this;
+    }
+
+    /**
+     * Get the current parent gridfield
+     *
+     * @return  GridField
+     */ 
+    public function getGridfield()
+    {
+        return $this->gridfield;
     }
 }
