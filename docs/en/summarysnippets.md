@@ -62,6 +62,18 @@ SilverCommerce\CatalogueAdmin\Admin\CatalogueAdmin:
     - TagsSnippet
 ```
 
+You can also specify snippets for a specific managed model class by doing the following:
+
+```YML
+SilverCommerce\CatalogueAdmin\Admin\CatalogueAdmin:
+  registered_snippets:
+    - MyProductClass:
+      - ProductSnippet
+      - CategorySnippet
+      - TagsSnippet
+```
+
+
 ## Changing the background colour
 
 By default, a snippet can be given a background that utilises a Bootstrap colour class
