@@ -3,23 +3,17 @@
 namespace ilateral\SilverStripe\ModelAdminPlus;
 
 use SilverStripe\Forms\Form;
-use SilverStripe\ORM\ArrayLib;
 use SilverStripe\ORM\ArrayList;
-use SilverStripe\Core\ClassInfo;
-use SilverStripe\Forms\TextField;
 use SilverStripe\Admin\ModelAdmin;
-use SilverStripe\View\Requirements;
 use Colymba\BulkManager\BulkManager;
-use SilverStripe\Control\Controller;
 use SilverStripe\Core\Config\Config;
-use SilverStripe\Forms\DatetimeField;
-use SilverStripe\Core\Injector\Injector;
+use SilverStripe\Control\HTTPRequest;
+use SilverStripe\Forms\GridField\GridField;
 use Colymba\BulkManager\BulkAction\UnlinkHandler;
+use SilverStripe\Forms\GridField\GridFieldConfig;
 use SilverStripe\Forms\GridField\GridFieldPaginator;
-use SilverStripe\Forms\GridField\GridFieldDataColumns;
-use SilverStripe\Forms\GridField\GridFieldSortableHeader;
-use SilverStripe\Forms\GridField\GridField_ColumnProvider;
 use ilateral\SilverStripe\ModelAdminPlus\AutoCompleteField;
+use SilverStripe\Forms\GridField\GridFieldButtonRow;
 use Symbiote\GridFieldExtensions\GridFieldConfigurablePaginator;
 use SilverStripe\Forms\GridField\GridFieldFilterHeader as SSGridFieldFilterHeader;
 
@@ -35,6 +29,8 @@ abstract class ModelAdminPlus extends ModelAdmin
 {
     const EXPORT_FIELDS = "export_fields";
 
+    const ACTION_SUGGEST = 'suggest';
+
     /**
      * Automatically convert date fields on gridfields
      * to use `Date.Nice`.
@@ -42,7 +38,6 @@ abstract class ModelAdminPlus extends ModelAdmin
      * @var boolean
      */
     private static $auto_convert_dates = true;
-
 
     /**
      * Automatically convert DB text fields to AutoComplete fields
@@ -52,7 +47,8 @@ abstract class ModelAdminPlus extends ModelAdmin
     private static $convert_to_autocomplete = true;
 
     private static $allowed_actions = [
-        "SearchForm"
+        "SearchForm",
+        self::ACTION_SUGGEST
     ];
 
     /**
@@ -61,23 +57,42 @@ abstract class ModelAdminPlus extends ModelAdmin
      *
      * These snippets are then setup when ModelAdminPlus is initilised and
      * rendered into the ModelAdminPlus content template.
+     * 
+     * This list can also be a divided up by managed classnames, so that snippets will
+     * only be loaded when accessing that class, EG:
+     * 
+     * $registered_snippets = [
+     *      MyObject::class => [
+     *          MySnippetOne::class,
+     *          MySnippetTwo::class
+     *      ]
+     * ];
      *
      * @var array
      */
     private static $registered_snippets = [];
 
     /**
-     * Setup
+     * Setup snippets for current screen
      */
     public function getSnippets()
     {
         $snippets = ArrayList::create();
+        $model_class = $this->getModelClass();
 
         // Setup any model admin plus snippets
-        foreach ($this->config()->registered_snippets as $snippet) {
-            $snippet = Injector::inst()->create($snippet);
-            $snippet->setParent($this);
-            $snippets->add($snippet);
+        foreach ($this->config()->registered_snippets as $key => $value) {
+            if (is_int($key)) {
+                $snippet = $this->createSnippetObject($value);
+                $snippets->add($snippet);
+            }
+
+            if (is_array($value) && $key == $model_class) {
+                foreach ($value as $snippet_class) {
+                    $snippet = $this->createSnippetObject($snippet_class);
+                    $snippets->add($snippet);
+                }
+            }
         }
 
         $snippets = $snippets->sort("Order", "DESC");
@@ -87,12 +102,16 @@ abstract class ModelAdminPlus extends ModelAdmin
         return $snippets;
     }
 
+    protected function createSnippetObject(string $class): ModelAdminSnippet
+    {
+        $snippet = new $class('snippets-before');
+        $snippet->setParent($this);
+        return $snippet;
+    }
+
     public function init()
     {
         parent::init();
-
-        // Require additional CSS
-        Requirements::css("i-lateral/silverstripe-modeladminplus:client/dist/css/admin.css");
 
         $clear = $this->getRequest()->getVar("clear");
 
@@ -198,35 +217,35 @@ abstract class ModelAdminPlus extends ModelAdmin
 
         return $data;
     }
-    
-    /**
-     * Add bulk editor to Edit Form
-     *
-     * @param int|null  $id
-     * @param FieldList $fields
-     *
-     * @return Form A Form object
-     */
-    public function getEditForm($id = null, $fields = null)
+
+    protected function getGridField(): GridField
     {
-        $form = parent::getEditForm($id, $fields);
-        $grid_field = $form
-            ->Fields()
-            ->fieldByName($this->sanitiseClassName($this->modelClass));
+        $field = parent::getGridField();
+
+        if ($this->config()->auto_convert_dates) {
+            GridFieldDateFinder::create($field)->convertDateFields();
+        }
+
+        return $field;
+    }
+
+    protected function getGridFieldConfig(): GridFieldConfig
+    {
+        $config = parent::getGridFieldConfig();
 
         // Add bulk editing to gridfield
         $manager = new BulkManager();
         $manager->removeBulkAction(UnlinkHandler::class);
 
-        $config = $grid_field->getConfig();
-
         $config
+            ->addComponent(new GridFieldSnippetRow(), GridFieldButtonRow::class)
             ->removeComponentsByType(GridFieldPaginator::class)
             ->addComponent($manager)
             ->addComponent(new GridFieldConfigurablePaginator());
 
         // Switch to custom filter header
-        $config
+        if ($config->getComponentsByType(SSGridFieldFilterHeader::class)->exists()) {
+            $config
             ->removeComponentsByType(SSGridFieldFilterHeader::class)
             ->addComponent(new GridFieldFilterHeader(
                 false,
@@ -237,46 +256,47 @@ abstract class ModelAdminPlus extends ModelAdmin
                     $this->extend('updateSearchForm', $form);
                 }
             ));
-
-        if (!$this->showSearchForm ||
-            (is_array($this->showSearchForm) && !in_array($this->modelClass, $this->showSearchForm))
-        ) {
-            $config->removeComponentsByType(GridFieldFilterHeader::class);
         }
 
-        if ($this->config()->auto_convert_dates) {
-            GridFieldDateFinder::create($grid_field)->convertDateFields();
+        // Add custom snippets
+        foreach ($this->getSnippets() as $snippet) {
+            $config->addComponent($snippet);
         }
 
-        return $form;
+        return $config;
     }
 
     /**
-     * Set the session from the submitted form data (and redirect back)
+     * Find and return the recommended suggestion for an autocomplete
+     * field
      *
      * @param array $data Submitted form
      * @param Form  $form The current form
      *
      * @return HTTPResponse
      */
-    public function search($data, $form)
+    public function suggest(HTTPRequest $request)
     {
-        foreach ($data as $key => $value) {
-            // Ensure we clear any null values
-            // so they don't mess up the list
-            if (empty($data[$key])) {
-                unset($data[$key]);
-            }
+        $name = $request->param('n');
+        $grid = $this->getGridField();
 
-            // Ensure we clear any null values
-            // so they don't mess up the list
-            if (strpos($key, "action_") !== false) {
-                unset($data[$key]);
-            }
+        // Manually re-assign gridfield to edit form
+        $form = $this->getEditForm();
+        $grid->setForm($form);
+
+        $config = $grid->getConfig();
+        /** @var GridFieldFilterHeader */
+        $search = $config->getComponentByType(GridFieldFilterHeader::class);
+        $form = isset($search) ? $search->getSearchForm($grid) : null;
+        
+        /** @var AutoCompleteField */
+        $field = isset($form) ? $form->Fields()->fieldByName($name) : null;
+
+        if (isset($field)) {
+            return $field->Suggest($request);
         }
 
-        $this->setSearchSession($data);
-
-        return $this->redirectBack();
+        // the response body
+        return json_encode([]);
     }
 }
