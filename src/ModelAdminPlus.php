@@ -15,6 +15,8 @@ use SilverStripe\Forms\GridField\GridFieldConfig;
 use SilverStripe\Forms\GridField\GridFieldButtonRow;
 use SilverStripe\Forms\GridField\GridFieldPaginator;
 use ilateral\SilverStripe\ModelAdminPlus\AutoCompleteField;
+use SilverStripe\Core\Injector\Injector;
+use SilverStripe\Core\Manifest\ModuleManifest;
 use Symbiote\GridFieldExtensions\GridFieldConfigurablePaginator;
 use SilverStripe\Forms\GridField\GridFieldFilterHeader as SSGridFieldFilterHeader;
 
@@ -114,7 +116,12 @@ abstract class ModelAdminPlus extends ModelAdmin
     {
         parent::init();
 
-        Requirements::add_i18n_javascript('silverstripe/cms: client/lang', false, true);
+        /** @var ModuleManifest */
+        $modules = new ModuleManifest(BASE_PATH);
+
+        if ($modules->moduleExists('silverstripe/cms')) {
+            Requirements::add_i18n_javascript('silverstripe/cms: client/lang', false, true);
+        }
 
         $clear = $this->getRequest()->getVar("clear");
 
