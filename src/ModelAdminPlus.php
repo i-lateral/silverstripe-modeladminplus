@@ -108,7 +108,6 @@ abstract class ModelAdminPlus extends ModelAdmin
     protected function createSnippetObject(string $class): ModelAdminSnippet
     {
         $snippet = new $class('snippets-before');
-        $snippet->setParent($this);
         return $snippet;
     }
 
