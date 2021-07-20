@@ -5,6 +5,7 @@ namespace ilateral\SilverStripe\ModelAdminPlus;
 use SilverStripe\Control\Controller;
 use SilverStripe\Forms\GridField\GridField;
 use SilverStripe\Forms\GridField\GridFieldFilterHeader as SSGridFieldFilterHeader;
+use SilverStripe\ORM\Search\SearchContext;
 use TractorCow\AutoComplete\AutoCompleteField;
 
 /**
@@ -42,5 +43,12 @@ class GridFieldFilterHeader extends SSGridFieldFilterHeader
         }
 
         return $form;
+    }
+
+    public function setSearchContext(SearchContext $context)
+    {
+        $this->searchContext = $context;
+
+        return $this;
     }
 }

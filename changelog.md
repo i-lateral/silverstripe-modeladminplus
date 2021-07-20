@@ -45,3 +45,7 @@
 * Move snippets so they become attached to a gridfield (rather than the model admin itself)
 * Update templates
 * Add support for `Many_Many` > Through assotiations
+
+## 1.2.1
+
+* Allow setting of custom search context
