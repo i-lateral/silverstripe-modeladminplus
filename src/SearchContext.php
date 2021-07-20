@@ -2,7 +2,9 @@
 
 namespace ilateral\SilverStripe\ModelAdminPlus;
 
+use SilverStripe\ORM\SS_List;
 use SilverStripe\Core\ClassInfo;
+use SilverStripe\ORM\DataObject;
 use SilverStripe\Forms\TextField;
 use SilverStripe\Core\Config\Config;
 use SilverStripe\ORM\Search\SearchContext as SSSearchContext;
@@ -52,7 +54,18 @@ class SearchContext extends SSSearchContext
                 // If this is a relation, switch class name
                 if (strpos($name, "__")) {
                     $parts = explode("__", $db_field);
-                    $field_class = isset($associations[$parts[0]]) ? $associations[$parts[0]] : null;
+                    $object = singleton($this->modelClass)->relObject($parts[0]);
+                    $field_class = null;
+                    
+                    // Account for many_many through in associations
+                    if ($object instanceof SS_List) {
+                        $field_class = $object->dataClass();
+                    } elseif ($object instanceof DataObject) {
+                        $field_class = get_class($object);
+                    } elseif (isset($associations[$parts[0]]) && !is_array($associations[$parts[0]])) {
+                        $field_class = $associations[$parts[0]];
+                    }
+
                     $db_field = $parts[1];
                     $in_db = ($field_class) ? true : false;
                 }

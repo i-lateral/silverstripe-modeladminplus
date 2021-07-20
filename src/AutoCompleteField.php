@@ -34,7 +34,11 @@ class AutoCompleteField extends TractorCowAutoCompleteField
         );
 
         // Override the value so we start with a clear search form (depending on configuration).
-        $data['value'] = ($this->getPopulateSeparately() ? null : $this->Value());
+        if ($this->getPopulateSeparately()) {
+            $data['value'] = null;
+        } else {
+            $data['value'] = $this->Value();
+        }
 
         return $data;
     }
