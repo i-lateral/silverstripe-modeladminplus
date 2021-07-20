@@ -44,7 +44,4 @@
 * Re-add autocomplete support to search
 * Move snippets so they become attached to a gridfield (rather than the model admin itself)
 * Update templates
-
-## 1.2.1
-
 * Add support for `Many_Many` > Through assotiations
