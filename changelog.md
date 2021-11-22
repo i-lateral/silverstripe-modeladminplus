@@ -49,3 +49,7 @@
 ## 1.2.1
 
 * Allow setting of custom search context
+
+## 1.2.2
+
+* Re-add css fix for bulk editing checkboxes
