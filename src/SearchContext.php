@@ -19,6 +19,17 @@ class SearchContext extends SSSearchContext
     protected $convert_to_autocomplete = true;
 
     /**
+     * Scaffold a default search that will be executed when a list is first loaded
+     * (and replaced when a custom filter is run)
+     *
+     * @return array
+     */
+    public function getDefaultQuery(): array
+    {
+        return [];
+    }
+
+    /**
      * Extend default search fields and add extra functionality.
      * 
      * @return \SilverStripe\Forms\FieldList

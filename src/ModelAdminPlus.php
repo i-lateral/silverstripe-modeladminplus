@@ -3,20 +3,22 @@
 namespace ilateral\SilverStripe\ModelAdminPlus;
 
 use SilverStripe\Forms\Form;
+use SilverStripe\ORM\DataList;
 use SilverStripe\ORM\ArrayList;
 use SilverStripe\Admin\ModelAdmin;
 use SilverStripe\View\Requirements;
 use Colymba\BulkManager\BulkManager;
 use SilverStripe\Core\Config\Config;
 use SilverStripe\Control\HTTPRequest;
+use SilverStripe\Core\Injector\Injector;
 use SilverStripe\Forms\GridField\GridField;
+use SilverStripe\Core\Manifest\ModuleManifest;
 use Colymba\BulkManager\BulkAction\UnlinkHandler;
 use SilverStripe\Forms\GridField\GridFieldConfig;
 use SilverStripe\Forms\GridField\GridFieldButtonRow;
 use SilverStripe\Forms\GridField\GridFieldPaginator;
+use ilateral\SilverStripe\ModelAdminPlus\SearchContext;
 use ilateral\SilverStripe\ModelAdminPlus\AutoCompleteField;
-use SilverStripe\Core\Injector\Injector;
-use SilverStripe\Core\Manifest\ModuleManifest;
 use Symbiote\GridFieldExtensions\GridFieldConfigurablePaginator;
 use SilverStripe\Forms\GridField\GridFieldFilterHeader as SSGridFieldFilterHeader;
 
@@ -109,6 +111,27 @@ abstract class ModelAdminPlus extends ModelAdmin
     {
         $snippet = new $class('snippets-before');
         return $snippet;
+    }
+
+    /**
+     * Is the current user filtering the active list?
+     *
+     * @return bool
+     */
+    protected function isCurrentlyFiltering(): bool
+    {
+        $request = $this->getRequest();
+        $post_vars = $request->postVars();
+
+        if (count($post_vars) === 0) {
+            return false;
+        }
+
+        if (isset($post_vars['filter'])) {
+            return true;
+        }
+
+        return false;
     }
 
     public function init()
@@ -273,6 +296,54 @@ abstract class ModelAdminPlus extends ModelAdmin
         }
 
         return $config;
+    }
+
+    /**
+     * Get a default search filter from the search context (if available)
+     *
+     * @return array
+     */
+    protected function getDefaultSearchFilter(): array
+    {
+        $grid = $this->getGridField();
+        $config = $this->getGridFieldConfig();
+        /** @var GridFieldFilterHeader */
+        $header = $config->getComponentByType(GridFieldFilterHeader::class);
+
+        if (empty($header)) {
+            return [];
+        }
+
+        /** @var SearchContext */
+        $context = $header->getSearchContext($grid);
+
+        if (method_exists($context, 'getDefaultQuery')) {
+            return $context->getDefaultQuery();
+        }
+
+        return [];
+    }
+
+
+    /**
+     * If no filter is currently being applied, then see if the provided
+     * search context applies a default filter
+     *
+     * @return DataList
+     */
+    public function getList(): DataList
+    {
+        $list = parent::getList();
+
+        if (!$this->isCurrentlyFiltering()) {
+            $filter = $this->getDefaultSearchFilter();
+
+            if (count($filter) > 0) {
+                $list = $list->filter($filter);
+            }
+        }
+
+        return $list;
     }
 
     /**

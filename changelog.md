@@ -53,3 +53,7 @@
 ## 1.2.2
 
 * Re-add css fix for bulk editing checkboxes
+
+## 1.2.3
+
+* Allow adding default search params to your objects model admin search context
