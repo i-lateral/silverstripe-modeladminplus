@@ -10,6 +10,7 @@ Expanded version of ModelAdmin that adds some extra features:
 * Adding bulk editing (using `colymba/gridfield-bulk-editing-tools` by default). 
 * When generating export fields for a `DataObject` also checks if the object has `export_fields`
 * Automatically find and format `DBDate`/`DBDatetime` fields to `DBDate.Nice`
+* Automatic "default" filtering of objects based on a config variable or custom method in your search context
 
 ## Installing
 
