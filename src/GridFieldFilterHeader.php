@@ -2,11 +2,13 @@
 
 namespace ilateral\SilverStripe\ModelAdminPlus;
 
+use SilverStripe\ORM\SS_List;
 use SilverStripe\Control\Controller;
 use SilverStripe\Forms\GridField\GridField;
-use SilverStripe\Forms\GridField\GridFieldFilterHeader as SSGridFieldFilterHeader;
-use SilverStripe\ORM\Search\SearchContext;
 use TractorCow\AutoComplete\AutoCompleteField;
+use ilateral\SilverStripe\ModelAdminPlus\SearchContext;
+use SilverStripe\ORM\Search\SearchContext as SSSearchContext;
+use SilverStripe\Forms\GridField\GridFieldFilterHeader as SSGridFieldFilterHeader;
 
 /**
  * Custom filter header that calls custom model admin search context
@@ -45,7 +47,47 @@ class GridFieldFilterHeader extends SSGridFieldFilterHeader
         return $form;
     }
 
-    public function setSearchContext(SearchContext $context)
+    /**
+     * Overwrite the default data manipulation and load
+     * in default filters if there any available
+     * 
+     * @inheritDoc
+     */
+    public function getManipulatedData(GridField $gridField, SS_List $dataList)
+    {
+        if (!$this->checkDataType($dataList)) {
+            return $dataList;
+        }
+
+        /** @var SearchContext */
+        $context = $this->getSearchContext($gridField);
+
+        /** @var Filterable $dataList */
+        /** @var GridState_Data $columns */
+        $columns = $gridField->State->GridFieldFilterHeader->Columns(null);
+
+        if (empty($columns)) {
+            $filterArguments = $context->getDefaultFilter();
+        } else {
+            $filterArguments = $columns->toArray();
+        }
+
+        if (count($filterArguments) === 0) {
+            return $dataList;
+        }
+
+        $dataListClone = clone($dataList);
+        $results = $context->getQuery(
+            $filterArguments,
+            false,
+            false,
+            $dataListClone
+        );
+
+        return $results;
+    }
+
+    public function setSearchContext(SSSearchContext $context)
     {
         $this->searchContext = $context;
 

@@ -19,13 +19,31 @@ class SearchContext extends SSSearchContext
     protected $convert_to_autocomplete = true;
 
     /**
-     * Scaffold a default search that will be executed when a list is first loaded
-     * (and replaced when a custom filter is run)
+     * Allow generation of a default filter, either
+     * via a config variable or more complex logic
+     * that can be added via overwriting this method
      *
-     * @return array
+     * In order to add this via config, you will need
+     * to add a config variable that includes the field
+     * name as a key and the query as the value, for
+     * example:
+     * 
+     *   private static $default_search_filter = [
+     *     'Status' => 'New',
+     *     'Created:GreaterThan' => '2021-01-01'
+     *   ];
+     *
+     * @return string[]
      */
-    public function getDefaultQuery(): array
+    public function getDefaultFilter(): array
     {
+        $class = $this->modelClass;
+        $default = (array)Config::inst()->get($class, "default_search_filter");
+
+        if (count($default) > 0) {
+            return $default;
+        }
+
         return [];
     }
 
@@ -121,11 +139,11 @@ class SearchContext extends SSSearchContext
     /**
      * Set use autocomplete fields instead of text fields
      *
-     * @param boolean $convert Convert?
+     * @param bool $convert Convert?
      *
      * @return self
      */ 
-    public function setConvertToAutocomplete(boolean $convert)
+    public function setConvertToAutocomplete(bool $convert)
     {
         $this->convert_to_autocomplete = $convert;
         return $this;
