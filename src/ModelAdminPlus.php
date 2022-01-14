@@ -324,14 +324,13 @@ abstract class ModelAdminPlus extends ModelAdmin
         return [];
     }
 
-
     /**
      * If no filter is currently being applied, then see if the provided
      * search context applies a default filter
      *
      * @return DataList
      */
-    public function getList(): DataList
+    public function getList()
     {
         $list = parent::getList();
 
