@@ -5,10 +5,11 @@ instance first loads and there is no existing search data,
 the list is automatically filtered by either a config variable
 from the model object or by overwriting a method on the `SearchFilter`
 
-### Default Filter Via Config
+### Default Filter Via Config or Method on object
 
 The simplest search filter can be added via a config variable
-on your object class, for example:
+on your object class, or, if you want some more complex logic,
+the `getDefaultSearchFilter` method for example:
 
 ```php
 class MyDataObject extends DataObject
@@ -22,13 +23,27 @@ class MyDataObject extends DataObject
   private static $default_search_filter = [
     "Name:not" => "Steve"
   ];
+
+  public functon getDefaultSearchFilter(): array
+  {
+    // Get the default filter from config
+    $filter = parent::getDefaultSearchFilter();
+
+    // If searching for Jeff, only look for
+    // results from google
+    if ($this->Name == 'Jeff') {
+      $filter['URL'] = "www.google.com";
+    }
+
+    return $filter;
+  }
 }
 
 ```
 
 ### Custom SearchContext
 
-If you want a more complex default search, then you can do this by overwriting `SearchFilter::getDefaultFilter()`.
+If you want a more complex default search, you can also overwrite `SearchFilter::getDefaultFilter()`.
 
 For Example:
 

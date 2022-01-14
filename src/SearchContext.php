@@ -37,14 +37,16 @@ class SearchContext extends SSSearchContext
      */
     public function getDefaultFilter(): array
     {
-        $class = $this->modelClass;
-        $default = (array)Config::inst()->get($class, "default_search_filter");
+        /** @var DataObject */
+        $obj = singleton($this->modelClass);
 
-        if (count($default) > 0) {
-            return $default;
+        if ($obj->hasMethod('getDefaultSearchFilter')) {
+            $default = $obj->getDefaultSearchFilter();
+        } else {
+            $default = [];
         }
 
-        return [];
+        return $default;
     }
 
     /**
