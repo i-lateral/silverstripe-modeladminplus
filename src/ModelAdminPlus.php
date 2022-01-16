@@ -3,6 +3,7 @@
 namespace ilateral\SilverStripe\ModelAdminPlus;
 
 use SilverStripe\Forms\Form;
+use SilverStripe\ORM\SS_List;
 use SilverStripe\ORM\DataList;
 use SilverStripe\ORM\ArrayList;
 use SilverStripe\Admin\ModelAdmin;
@@ -78,6 +79,13 @@ abstract class ModelAdminPlus extends ModelAdmin
     private static $registered_snippets = [];
 
     /**
+     * Final list to be added to the grid prior to 
+     *
+     * @var SS_List
+     */
+    protected $final_list;
+
+    /**
      * Setup snippets for current screen
      */
     public function getSnippets()
@@ -143,6 +151,14 @@ abstract class ModelAdminPlus extends ModelAdmin
 
         if ($modules->moduleExists('silverstripe/cms')) {
             Requirements::add_i18n_javascript('silverstripe/cms: client/lang', false, true);
+        }
+    
+        // Determine the final list for the gridfield (done during
+        // initialise to avoid nested errors)
+        if ($this->isCurrentlyFiltering()) {
+            $this->setFinalList($this->getList());
+        } else {
+            $this->setFinalList($this->getDefaultFilteredList());
         }
 
         $clear = $this->getRequest()->getVar("clear");
@@ -332,18 +348,33 @@ abstract class ModelAdminPlus extends ModelAdmin
      */
     public function getList()
     {
+        $final = $this->getFinalList();
+
+        if (!empty($final)) {
+            return $final;
+        }
+
+        return parent::getList();
+    }
+
+    /**
+     * Get a filtered version of the master list using the default
+     * filter (if available)
+     *
+     * @return DataList
+     */
+    public function getDefaultFilteredList()
+    {
         $list = parent::getList();
+        $filter = $this->getDefaultSearchFilter();
 
-        if (!$this->isCurrentlyFiltering()) {
-            $filter = $this->getDefaultSearchFilter();
-
-            if (count($filter) > 0) {
-                $list = $list->filter($filter);
-            }
+        if (count($filter) > 0) {
+            $list = $list->filter($filter);
         }
 
         return $list;
     }
+
 
     /**
      * Find and return the recommended suggestion for an autocomplete
@@ -377,5 +408,16 @@ abstract class ModelAdminPlus extends ModelAdmin
 
         // the response body
         return json_encode([]);
+    }
+
+    public function getFinalList()
+    {
+        return $this->final_list;
+    }
+
+    public function setFinalList(SS_List $list): self
+    {
+        $this->final_list = $list;
+        return $this;
     }
 }

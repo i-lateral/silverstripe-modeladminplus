@@ -6,9 +6,11 @@ use SilverStripe\ORM\DataExtension;
 
 class DataObjectExtension extends DataExtension
 {
-    /**
-     * Get a custom search context for model admin plus
-     */
+    public function getDefaultSearchFilter(): array
+    {
+        return (array)$this->getOwner()->config()->get("default_search_filter");
+    }
+
     public function getModelAdminSearchContext()
     {
         return SearchContext::create(
