@@ -57,3 +57,7 @@
 ## 1.2.3
 
 * Allow adding default search params to your objects model admin search context
+
+## 1.2.4
+
+* Fix issues viewing a single record when filtering

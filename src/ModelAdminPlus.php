@@ -130,12 +130,21 @@ abstract class ModelAdminPlus extends ModelAdmin
     {
         $request = $this->getRequest();
         $post_vars = $request->postVars();
+        $get_vars = $request->getVars();
+        $class = $this->sanitiseClassName($this->getModelClass());
 
-        if (count($post_vars) === 0) {
+        if (count($post_vars) === 0 && count($get_vars) === 0) {
             return false;
         }
 
         if (isset($post_vars['filter'])) {
+            return true;
+        }
+
+        // Slightly hacky, but not sure of a better way to
+        // allow editing of a record when gridstate is used
+        // for filtering
+        if (isset($get_vars['gridState-' . $class . '-0'])) {
             return true;
         }
 
