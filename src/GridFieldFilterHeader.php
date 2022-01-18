@@ -66,6 +66,11 @@ class GridFieldFilterHeader extends SSGridFieldFilterHeader
         /** @var GridState_Data $columns */
         $columns = $gridField->State->GridFieldFilterHeader->Columns(null);
 
+        // If dealing with basic SearchContext
+        if (empty($columns) && !method_exists($context, 'getDefaultFilter')) {
+            return $dataList;
+        }
+
         if (empty($columns)) {
             $filterArguments = $context->getDefaultFilter();
         } else {

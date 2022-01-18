@@ -61,3 +61,7 @@
 ## 1.2.4
 
 * Fix issues viewing a single record when filtering
+
+## 1.2.5
+
+* Additional fixes
