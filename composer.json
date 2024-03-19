@@ -25,7 +25,7 @@
     },
     "require": {
         "silverstripe/framework": "^5",
-        "silverstripe/admin": "1.0",
+        "silverstripe/admin": "^2",
         "symbiote/silverstripe-gridfieldextensions": "^4",
         "colymba/gridfield-bulk-editing-tools": "^4",
         "tractorcow/silverstripe-autocomplete": "^5"
