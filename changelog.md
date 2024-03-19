@@ -65,3 +65,7 @@
 ## 1.2.5
 
 * Additional fixes
+
+## 2.0.0
+
+* SilverStripe 5.* branch
