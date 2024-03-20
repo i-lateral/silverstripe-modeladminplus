@@ -18,11 +18,9 @@ class GridFieldFilterHeader extends SSGridFieldFilterHeader
     public function getSearchContext(GridField $gridField)
     {
         if (!$this->searchContext) {
-            $this->searchContext = singleton($gridField->getModelClass())->getModelAdminSearchContext();
-
-            if ($this->updateSearchContextCallback) {
-                call_user_func($this->updateSearchContextCallback, $this->searchContext);
-            }
+            $class = $gridField->getModelClass();
+            $this->searchContext = singleton($class)
+                ->getModelAdminSearchContext();
         }
 
         return $this->searchContext;
